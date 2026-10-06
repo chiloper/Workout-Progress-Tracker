@@ -5,24 +5,25 @@ import Login from './pages/login/login';
 import Log from './pages/log/log';
 import Progress from './pages/progress/progress';
 import Home from './pages/home/home';
-import NotFoundPage from './NotFound';
+import NotFound from './NotFound';
 import RootLayout from './RootLayout';
+import { ErrorPage } from './Errorpage';
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <NotFoundPage />,
+    ErrorBoundary: ErrorPage,
+    errorElement: <NotFound />,
     children: [
       { index: true, element: <Home /> },
       { path: "history", element: <History /> },
       { path: "log", element: <Log /> },
       { path: "progress", element: <Progress /> },
-      { path: "*", element: <NotFoundPage /> }
+      { path: "*", element: <NotFound /> }
     ],
   },
-  { path: "/login", element: <Login /> }
-
+  { path: "/login", element: <Login /> },
 ],
   { basename: import.meta.env.BASE_URL }
 );
