@@ -11,18 +11,20 @@ import RootLayout from './RootLayout';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <RootLayout />,      // มี navbar + <Outlet />
+    element: <RootLayout />,
     errorElement: <NotFoundPage />,
     children: [
       { index: true, element: <Home /> },
       { path: "history", element: <History /> },
       { path: "log", element: <Log /> },
       { path: "progress", element: <Progress /> },
+      { path: "*", element: <NotFoundPage /> }
     ],
   },
-  { path: "/login", element: <Login /> },
+  { path: "/login", element: <Login /> }
+
 ],
-  { basename: '/Workout-Progress-Tracker/' }
+  { basename: import.meta.env.BASE_URL }
 );
 
 
