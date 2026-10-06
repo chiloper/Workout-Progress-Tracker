@@ -1,35 +1,35 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class EnvironmentVariables {
   @IsString()
   @IsNotEmpty()
-  DATABASE_URL!: string
+  DATABASE_URL!: string;
 
   @IsString()
   @IsNotEmpty()
-  DIRECT_URL!: string
+  DIRECT_URL!: string;
 
   @IsString()
   @IsNotEmpty()
-  JWT_SECRET!: string
+  JWT_SECRET!: string;
 
   @IsString()
   @IsNotEmpty()
-  JWT_EXPIRES_IN!: string
+  JWT_EXPIRES_IN!: string;
 
   @IsString()
   @IsNotEmpty()
-  CORS_ORIGIN!: string
+  CORS_ORIGIN!: string;
 
   @IsString()
   @IsNotEmpty()
-  SEED_EMAIL!: string
+  SEED_EMAIL!: string;
 
   @IsString()
   @IsNotEmpty()
-  SEED_PASSWORD!: string
+  SEED_PASSWORD!: string;
 
   @IsNumber()
-  @IsNotEmpty()
-  PORT!: Number
+  @IsOptional()
+  PORT!: number;
 }
