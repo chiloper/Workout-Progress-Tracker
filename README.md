@@ -1,13 +1,9 @@
-WEB: 
- 
-  Command 
-    cd web
-    npm run build
-    npm run start
+## API
+cd api
+npm install
+npm run start:dev    # http://localhost:3000
 
-
-API:
-  Command
-    cd api
-    npm run build
-    npm run start
+## Web
+cd web
+npm install
+npm run dev          # http://localhost:5173
