@@ -5,6 +5,7 @@ import { HealthModule } from './health/health.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/validate';
 import { PrismaModule } from './prisma/prisma.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,10 +14,11 @@ import { PrismaModule } from './prisma/prisma.module';
       envFilePath: [`.env.${process.env.NODE_ENV || 'development'}`, '.env'],
       validate,
     }),
+    AuthModule,
     HealthModule,
     PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
