@@ -5,13 +5,13 @@ export interface JwtPayLoad {
 
 export interface PublicUser {
   id: string;
-  email: string
+  email: string;
 }
 
 export interface AuthTokens {
   accessToken: string;
   expiresIn: number;
-  user: PublicUser
+  user: PublicUser;
 }
 
 export interface AuthenticatedUser {

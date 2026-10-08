@@ -1,54 +1,60 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { Reflector } from "@nestjs/core";
-import { JwtService } from "@nestjs/jwt";
-import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
-import { Request } from "express";
-import { AuthenticatedUser, JwtPayLoad } from "../types/auth.types";
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { JwtService } from '@nestjs/jwt';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
+import { Request } from 'express';
+import { AuthenticatedUser, JwtPayLoad } from '../types/auth.types';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly reflector: Reflector
-  ) { }
+    private readonly reflector: Reflector,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
-      context.getClass()
-    ])
+      context.getClass(),
+    ]);
 
-    if (isPublic) return true
+    if (isPublic) return true;
 
-    const request = context.switchToHttp().getRequest<Request & { user?: AuthenticatedUser }>()
-    const token = this.extractBearerToken(request)
+    const request = context
+      .switchToHttp()
+      .getRequest<Request & { user?: AuthenticatedUser }>();
+    const token = this.extractBearerToken(request);
 
-    if (!token) throw new UnauthorizedException("Missing access token.")
+    if (!token) throw new UnauthorizedException('Missing access token.');
 
-    let payload: JwtPayLoad
+    let payload: JwtPayLoad;
     try {
-      payload = await this.jwtService.verifyAsync<JwtPayLoad>(token)
+      payload = await this.jwtService.verifyAsync<JwtPayLoad>(token);
     } catch {
-      throw new UnauthorizedException("Access token is invalid or expred.")
+      throw new UnauthorizedException('Access token is invalid or expred.');
     }
 
     request.user = {
       id: payload.sub,
-      email: payload.email
-    }
+      email: payload.email,
+    };
 
-    return true
+    return true;
   }
 
   private extractBearerToken(request: Request): string | null {
-    const header = request.headers.authorization
+    const header = request.headers.authorization;
     if (!header) {
-      return null
+      return null;
     }
 
-    console.log(header);
-    const [schema, value] = header.split(" ")
-    console.log(schema);
-    return schema?.toLocaleLowerCase() === "bearer" && value ? value : null
+    const [schema, value] = header.split(' ');
+
+    return schema?.toLocaleLowerCase() === 'bearer' && value ? value : null;
   }
 }
