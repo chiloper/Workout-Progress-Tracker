@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { HealthModule } from './health/health.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/validate';
-import { PrismaModule } from './pisama/prisma.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
   imports: [
