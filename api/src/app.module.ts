@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { HealthModule } from './health/health.module';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/validate';
+import { PrismaModule } from './pisama/prisma.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { validate } from './config/validate';
       validate,
     }),
     HealthModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

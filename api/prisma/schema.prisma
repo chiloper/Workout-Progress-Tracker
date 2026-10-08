@@ -19,7 +19,7 @@ enum MuscleGroup {
 }
 
 model User {
-  id           String     @id @default(uuid()) @db.Uuid
+  id           String     @id @default(uuid())
   email        String     @unique
   passwordHash String     @map("password_hash")
   createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(3)
@@ -30,8 +30,8 @@ model User {
 }
 
 model Exercise {
-  id          String      @id @default(uuid()) @db.Uuid
-  userId      String      @map("user_id") @db.Uuid
+  id          String      @id @default(uuid())
+  userId      String      @map("user_id")
   name        String
   muscleGroup MuscleGroup @map("muscle_group")
   isArchived  Boolean     @default(false) @map("is_archived")
@@ -45,14 +45,14 @@ model Exercise {
 }
 
 model Workout {
-  id              String   @id @default(ulid()) @db.Uuid
-  userId          String   @map("user_id") @db.Uuid
+  id              String   @id @default(ulid())
+  userId          String   @map("user_id")
   title           String?
   performedAt     DateTime @map("performed_at") @db.Timestamptz(3)
   durationMinutes Int?     @map("duration_minutes")
   note            String?
-  createAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
-  updateAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
 
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   workoutSets WorkoutSet[]
@@ -62,15 +62,16 @@ model Workout {
 }
 
 model WorkoutSet {
-  id            String  @id @default(ulid()) @db.Uuid
-  workoutId     String  @map("workout_id") @db.Uuid
-  exerciseId    String  @map("exercise_id") @db.Uuid
+  id            String  @id @default(ulid())
+  workoutId     String  @map("workout_id")
+  exerciseId    String  @map("exercise_id")
   exerciseOrder Int     @map("exercise_order")
   setNo         Int     @map("set_no")
-  weoghtKg      Decimal @map("weight_kg") @db.Decimal(6, 2)
+  weightKg      Decimal @map("weight_kg") @db.Decimal(6, 2)
+  reps          Int
 
   workout  Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  exercise Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
 
   @@unique([workoutId, exerciseId, setNo])
   @@index([exerciseId])
