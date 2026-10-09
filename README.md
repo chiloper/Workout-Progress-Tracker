@@ -4,7 +4,7 @@ npm install
 npm run start:dev    # http://localhost:3000
 
 
-APIURL: https://workout-progress-tracker-yq9y.onrender.com
+APIURL: https://workout-tracker-api-a488.onrender.com
 
 ## Web
 cd web
