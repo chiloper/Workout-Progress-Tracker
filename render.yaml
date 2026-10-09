@@ -3,6 +3,7 @@ services:
     name: workout-tracker-api
     runtime: node
     plan: free
+    region: singapore
     rootDir: api
     buildCommand: npm ci && npm run build && npx prisma migrate deploy
     startCommand: npm run start:prod
@@ -21,6 +22,10 @@ services:
       - key: JWT_EXPIRES_IN
         value: 30d
       - key: CORS_ORIGIN
+        sync: false
+      - key: SEED_EMAIL
+        sync: false
+      - key: SEED_PASSWORD
         sync: false
       - key: NODE_VERSION
         value: 24.12.0
