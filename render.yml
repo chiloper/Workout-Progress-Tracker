@@ -1,0 +1,26 @@
+service:
+  - type: web
+    name: workout-tracker-api
+    runtime: node
+    plan: free
+    rootDir: api
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    buildFilter:
+      paths:
+        - api/**
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRES_IN
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+      - key: NODE_VERSION
+        sync: 24.12.0
