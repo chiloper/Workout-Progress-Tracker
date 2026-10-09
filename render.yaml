@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     rootDir: api
-    buildCommand: npm ci && npm run build
+    buildCommand: npm ci && npm run build && npx prisma migrate deploy
     startCommand: npm run start:prod
     healthCheckPath: /health
     autoDeployTrigger: commit
@@ -19,8 +19,8 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: JWT_EXPIRES_IN
-        sync: false
+        sync: 30d
       - key: CORS_ORIGIN
         sync: false
       - key: NODE_VERSION
-        sync: 24.12.0
+        sync: `24.12.0`
