@@ -14,7 +14,7 @@ export class CreateExercisesDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(1, { message: 'name must be at least 1 characters.' })
-  @MaxLength(60, { message: 'name muse be as most 60 characters.' })
+  @MaxLength(60, { message: 'name must be as most 60 characters.' })
   @Transform(({ value }: TransformFnParams): unknown =>
     typeof value === 'string' ? value.trim() : (value as unknown),
   )
@@ -29,7 +29,7 @@ export class UpdateExercisesDto {
   @IsString()
   @IsOptional()
   @MinLength(1, { message: 'name must be at least 1 characters.' })
-  @MaxLength(60, { message: 'name muse be as most 60 characters.' })
+  @MaxLength(60, { message: 'name must be as most 60 characters.' })
   @Transform(({ value }: TransformFnParams): unknown =>
     typeof value === 'string' ? value.trim() : (value as unknown),
   )

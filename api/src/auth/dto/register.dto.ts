@@ -12,6 +12,6 @@ export class RegisterDto {
 
   @IsString()
   @MinLength(6, { message: 'Password must be at least 8 characters.' })
-  @MaxLength(72, { message: 'Password muse be as most 72 characters.' })
+  @MaxLength(72, { message: 'Password must be as most 72 characters.' })
   password!: string;
 }

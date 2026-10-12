@@ -9,7 +9,7 @@ import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
 
 @Injectable()
 export class ExercisesService {
-  constructor(private readonly exercisesRepository: ExercisesRepository) {}
+  constructor(private readonly exercisesRepository: ExercisesRepository) { }
 
   async findExercises(
     userId: string,
@@ -29,8 +29,8 @@ export class ExercisesService {
         if (e.code === 'P2002') {
           throw new ConflictException(`${dto.name} already exists`);
         }
-        throw e;
       }
+      throw e;
     }
   }
 

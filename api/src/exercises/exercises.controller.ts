@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Query,
@@ -15,7 +16,7 @@ import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
 
 @Controller()
 export class ExercisesController {
-  constructor(private readonly exercisesService: ExercisesService) {}
+  constructor(private readonly exercisesService: ExercisesService) { }
 
   @Get('exercises')
   getExercises(
@@ -37,7 +38,7 @@ export class ExercisesController {
   updateExercises(
     @CurrentUser() user: AuthenticatedUser,
     @Body() dto: UpdateExercisesDto,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.exercisesService.updateExercise(id, user.id, dto);
   }
