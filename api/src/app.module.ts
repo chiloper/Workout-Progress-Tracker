@@ -21,4 +21,4 @@ import { ExercisesModule } from './exercises/exercises.module';
   ],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

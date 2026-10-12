@@ -1,29 +1,36 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req } from "@nestjs/common";
-import { request } from "express";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import type { AuthenticatedUser } from "../auth/types/auth.types";
-import { ExercisesService } from "./exercises.service";
-import { Exercise } from "../../generated/client";
-import { CreateExercisesDto, UpdateExercisesDto } from "./dto/exercises.dto";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/types/auth.types';
+import { ExercisesService } from './exercises.service';
+import { Exercise } from '../../generated/client';
+import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
 
 @Controller()
 export class ExercisesController {
-  constructor(private readonly exercisesService: ExercisesService) { }
+  constructor(private readonly exercisesService: ExercisesService) {}
 
   @Get('exercises')
   getExercises(
     @CurrentUser() user: AuthenticatedUser,
-    @Query('includeArchived') includeArchived: boolean = false
+    @Query('includeArchived') includeArchived: boolean = false,
   ): Promise<Exercise[]> {
-    return this.exercisesService.findExercises(user.id, includeArchived)
+    return this.exercisesService.findExercises(user.id, includeArchived);
   }
 
   @Post('exercises')
   createExercises(
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: CreateExercisesDto
+    @Body() dto: CreateExercisesDto,
   ) {
-    return this.exercisesService.createExercise(user.id, dto)
+    return this.exercisesService.createExercise(user.id, dto);
   }
 
   @Patch('exercises/:id')
@@ -32,6 +39,6 @@ export class ExercisesController {
     @Body() dto: UpdateExercisesDto,
     @Param('id') id: string,
   ) {
-    return this.exercisesService.updateExercise(id, user.id, dto)
+    return this.exercisesService.updateExercise(id, user.id, dto);
   }
 }
