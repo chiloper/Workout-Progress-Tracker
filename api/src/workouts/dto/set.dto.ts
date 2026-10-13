@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsNumber, IsUUID, Max, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsUUID, Max, Min } from 'class-validator';
 
 export class CreateSetDto {
   @IsNotEmpty()
   @IsUUID()
   exerciseId!: string;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   @Min(1)
   setNo!: number;
@@ -15,7 +15,7 @@ export class CreateSetDto {
   @Max(1000)
   weightKg!: number;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
   @Min(1)
   @Max(100)

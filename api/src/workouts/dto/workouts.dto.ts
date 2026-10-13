@@ -3,11 +3,13 @@ import {
   ArrayMinSize,
   IsArray,
   IsDateString,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
   IsString,
+  MaxLength,
   ValidateNested,
 } from 'class-validator';
 import { CreateSetDto } from './set.dto';
@@ -16,6 +18,7 @@ import { Type } from 'class-transformer';
 export class CreateWorkoutDto {
   @IsOptional()
   @IsString()
+  @MaxLength(100, { message: 'Your message exceeds the maximum limit of 100 characters.' })
   title!: string;
 
   @IsDateString()
@@ -23,7 +26,7 @@ export class CreateWorkoutDto {
   performedAt!: string;
 
   @IsOptional()
-  @IsNumber()
+  @IsInt()
   @IsPositive()
   durationMinutes!: number;
 

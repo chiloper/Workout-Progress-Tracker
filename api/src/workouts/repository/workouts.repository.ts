@@ -5,7 +5,7 @@ import { workoutWithSets, WorkoutWithSets } from '../type/workouts.type';
 
 @Injectable()
 export class WorkoutsRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async checkExercise(userId: string, exerciseId: string[]): Promise<number> {
     return await this.prisma.exercise.count({
@@ -21,6 +21,8 @@ export class WorkoutsRepository {
     userId: string,
     dto: CreateWorkoutDto,
   ): Promise<WorkoutWithSets> {
+    const order = new Map<string, number>();
+    for (const s of dto.sets) if (!order.has(s.exerciseId)) order.set(s.exerciseId, order.size + 1);
     return this.prisma.workout.create({
       data: {
         userId,
@@ -31,7 +33,7 @@ export class WorkoutsRepository {
         workoutSets: {
           create: dto.sets.map((s, i) => ({
             exerciseId: s.exerciseId,
-            exerciseOrder: i + 1,
+            exerciseOrder: order.get(s.exerciseId)!,
             setNo: s.setNo,
             weightKg: s.weightKg,
             reps: s.reps,

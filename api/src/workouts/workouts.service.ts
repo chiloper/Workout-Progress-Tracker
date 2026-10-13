@@ -27,7 +27,7 @@ export class WorkoutsService {
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
-          throw new ConflictException(
+          throw new BadRequestException(
             'Duplicate setNo for the same exerscises.',
           );
         }
