@@ -1,34 +1,43 @@
-import { ArrayMaxSize, ArrayMinSize, IsArray, IsDate, IsDateString, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, Max, Min, ValidateNested } from "class-validator";
-import { CreateSetDto } from "./set.dto";
-import { Transform, TransformFnParams, Type } from "class-transformer";
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsDateString,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { CreateSetDto } from './set.dto';
+import { Type } from 'class-transformer';
 
 export class CreateWorkoutDto {
-
   @IsOptional()
   @IsString()
-  title!: string
+  title!: string;
 
   @IsDateString()
   @IsOptional()
-  performedAt!: string
+  performedAt!: string;
 
   @IsOptional()
   @IsNumber()
   @IsPositive()
-  durationMinutes!: number
+  durationMinutes!: number;
 
   @IsOptional()
   @IsString()
-  note!: string
+  note!: string;
 
   @IsArray()
   @IsNotEmpty()
   @ValidateNested({
-    each: true
+    each: true,
   })
   @Type(() => CreateSetDto)
   @ArrayMinSize(1)
   @ArrayMaxSize(100)
-  sets!: CreateSetDto[]
-
+  sets!: CreateSetDto[];
 }

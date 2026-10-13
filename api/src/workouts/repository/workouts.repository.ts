@@ -1,27 +1,26 @@
-import { Injectable } from "@nestjs/common";
-import { Prisma } from "../../../generated/client";
-import { PrismaService } from "../../prisma/prisma.service";
-import { CreateWorkoutDto } from "../dto/workouts.dto";
-import { workoutWithSets, WorkoutWithSets } from "../type/workouts.type";
-
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+import { CreateWorkoutDto } from '../dto/workouts.dto';
+import { workoutWithSets, WorkoutWithSets } from '../type/workouts.type';
 
 @Injectable()
 export class WorkoutsRepository {
-  constructor(
-    private readonly prisma: PrismaService
-  ) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async checkExercise(userId: string, exerciseId: string[]): Promise<number> {
     return await this.prisma.exercise.count({
       where: {
         id: { in: exerciseId },
         userId,
-        isArchived: false
-      }
-    })
+        isArchived: false,
+      },
+    });
   }
 
-  async createWorkout(userId: string, dto: CreateWorkoutDto): Promise<WorkoutWithSets> {
+  async createWorkout(
+    userId: string,
+    dto: CreateWorkoutDto,
+  ): Promise<WorkoutWithSets> {
     return this.prisma.workout.create({
       data: {
         userId,
@@ -35,13 +34,11 @@ export class WorkoutsRepository {
             exerciseOrder: i + 1,
             setNo: s.setNo,
             weightKg: s.weightKg,
-            reps: s.reps
-          }))
-        }
+            reps: s.reps,
+          })),
+        },
       },
-      include: workoutWithSets
-    })
+      include: workoutWithSets,
+    });
   }
 }
-
-

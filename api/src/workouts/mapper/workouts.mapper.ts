@@ -1,4 +1,4 @@
-import { WorkoutWithSets } from "../type/workouts.type";
+import { WorkoutWithSets } from '../type/workouts.type';
 
 export function toWorkoutResponse(w: WorkoutWithSets) {
   return {
