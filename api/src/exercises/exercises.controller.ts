@@ -16,7 +16,7 @@ import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
 
 @Controller()
 export class ExercisesController {
-  constructor(private readonly exercisesService: ExercisesService) { }
+  constructor(private readonly exercisesService: ExercisesService) {}
 
   @Get('exercises')
   getExercises(

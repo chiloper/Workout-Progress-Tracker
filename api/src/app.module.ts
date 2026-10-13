@@ -6,6 +6,7 @@ import { validate } from './config/validate';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ExercisesModule } from './exercises/exercises.module';
+import { WorkoutsModule } from './workouts/workouts.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { ExercisesModule } from './exercises/exercises.module';
     ExercisesModule,
     HealthModule,
     PrismaModule,
+    WorkoutsModule,
   ],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

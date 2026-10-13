@@ -9,7 +9,7 @@ import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
 
 @Injectable()
 export class ExercisesService {
-  constructor(private readonly exercisesRepository: ExercisesRepository) { }
+  constructor(private readonly exercisesRepository: ExercisesRepository) {}
 
   async findExercises(
     userId: string,
