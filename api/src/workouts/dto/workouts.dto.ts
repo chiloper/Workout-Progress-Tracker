@@ -5,7 +5,6 @@ import {
   IsDateString,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
@@ -18,7 +17,9 @@ import { Type } from 'class-transformer';
 export class CreateWorkoutDto {
   @IsOptional()
   @IsString()
-  @MaxLength(100, { message: 'Your message exceeds the maximum limit of 100 characters.' })
+  @MaxLength(100, {
+    message: 'Your message exceeds the maximum limit of 100 characters.',
+  })
   title!: string;
 
   @IsDateString()

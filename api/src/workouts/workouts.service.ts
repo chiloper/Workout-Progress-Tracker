@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { WorkoutsRepository } from './repository/workouts.repository';
 import { CreateWorkoutDto } from './dto/workouts.dto';
 import { Prisma } from '../../generated/client';
