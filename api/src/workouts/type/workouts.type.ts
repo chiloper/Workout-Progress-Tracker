@@ -12,3 +12,44 @@ export const workoutWithSets = {
 export type WorkoutWithSets = Prisma.WorkoutGetPayload<{
   include: typeof workoutWithSets;
 }>;
+
+export type WorkoutsWithTopExercise = {
+  id: string;
+  title: string;
+  performedAt: string;
+  durationMinutes: number;
+  exerciseCount: number;
+  setCount: number;
+  totalVolume: number;
+  topExercise: TopExercise[];
+};
+
+export type TopExercise = {
+  name: string;
+  weightKg: number;
+  reps: number;
+};
+
+export type WorkoutsTotal = {
+  items: WorkoutsWithTopExercise[];
+  total: number;
+};
+
+export type Workout = {
+  id: string;
+  title: string | null;
+  performedAt: Date;
+  durationMinutes: number | null;
+  note: string | null;
+  exercises: {
+    exerciseId: string;
+    name: string;
+    muscleGroup: string;
+    exerciseOrder: number;
+    sets: {
+      setNo: number;
+      weightKg: number;
+      reps: number;
+    }[];
+  }[];
+};

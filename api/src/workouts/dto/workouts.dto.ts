@@ -8,7 +8,9 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  Max,
   MaxLength,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { CreateSetDto } from './set.dto';
@@ -44,4 +46,25 @@ export class CreateWorkoutDto {
   @ArrayMinSize(1)
   @ArrayMaxSize(100)
   sets!: CreateSetDto[];
+}
+
+export class getWorkoutsQueryDto {
+  @IsString()
+  @IsNotEmpty()
+  from!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  to!: string;
+
+  @IsNotEmpty()
+  @Type(() => Number)
+  @Min(20)
+  @Max(50)
+  limit: number = 20;
+
+  @IsNotEmpty()
+  @Type(() => Number)
+  @Min(0)
+  offset: number = 0;
 }

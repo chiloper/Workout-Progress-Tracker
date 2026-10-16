@@ -44,4 +44,56 @@ export class WorkoutsRepository {
       include: workoutWithSets,
     });
   }
+
+  async deleteWorkouts(id: string): Promise<void> {
+    await this.prisma.workout.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async getWorkoutsById(
+    userId: string,
+    id: string,
+  ): Promise<WorkoutWithSets | null> {
+    return this.prisma.workout.findFirst({
+      where: {
+        userId,
+        id,
+      },
+      include: workoutWithSets,
+    });
+  }
+
+  async getWorkouts(
+    userId: string,
+    from: string,
+    to: string,
+    limit: number,
+    offset: number,
+  ): Promise<WorkoutWithSets[]> {
+    return await this.prisma.workout.findMany({
+      where: {
+        userId,
+        createdAt: {
+          gte: new Date(`${from}T00:00:00.000Z`),
+          lte: new Date(`${to}T23:59:59.999Z`),
+        },
+        workoutSets: {
+          every: {
+            exercise: {
+              isArchived: false,
+            },
+          },
+        },
+      },
+      include: workoutWithSets,
+      orderBy: {
+        performedAt: 'asc',
+      },
+      take: limit,
+      skip: offset,
+    });
+  }
 }
