@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  ParseUUIDPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -16,7 +17,7 @@ import type { AuthenticatedUser } from '../auth/types/auth.types';
 
 @Controller()
 export class WorkoutsController {
-  constructor(private readonly workoutsService: WorkoutsService) {}
+  constructor(private readonly workoutsService: WorkoutsService) { }
 
   @Post('workouts')
   async createWorkouts(
@@ -43,7 +44,7 @@ export class WorkoutsController {
   @Get('workouts/:id')
   async getWorkoutsById(
     @CurrentUser() user: AuthenticatedUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
     return this.workoutsService.getWorkoutsById(user.id, id);
   }
@@ -52,7 +53,7 @@ export class WorkoutsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteWorkout(
     @CurrentUser() user: AuthenticatedUser,
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
   ): Promise<void> {
     await this.workoutsService.deleteWorkouts(user.id, id);
   }

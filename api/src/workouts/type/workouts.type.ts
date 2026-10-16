@@ -21,10 +21,10 @@ export type WorkoutsWithTopExercise = {
   exerciseCount: number;
   setCount: number;
   totalVolume: number;
-  topExercise: TopExercise[];
+  topExercises: TopExercises[];
 };
 
-export type TopExercise = {
+export type TopExercises = {
   name: string;
   weightKg: number;
   reps: number;

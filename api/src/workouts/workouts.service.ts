@@ -1,13 +1,14 @@
 import {
   BadRequestException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { WorkoutsRepository } from './repository/workouts.repository';
 import { CreateWorkoutDto } from './dto/workouts.dto';
 import { Prisma } from '../../generated/client';
 import {
-  TopExercise,
+  TopExercises,
   Workout,
   WorkoutsTotal,
   WorkoutWithSets,
@@ -16,7 +17,7 @@ import { toWorkoutResponse } from './mapper/workouts.mapper';
 
 @Injectable()
 export class WorkoutsService {
-  constructor(private readonly workoutsRepository: WorkoutsRepository) {}
+  constructor(private readonly workoutsRepository: WorkoutsRepository) { }
 
   async createWorkout(userId: string, dto: CreateWorkoutDto): Promise<Workout> {
     const ids = [...new Set(dto.sets.map((s) => s.exerciseId))];
@@ -56,13 +57,14 @@ export class WorkoutsService {
     limit: number,
     offset: number,
   ): Promise<WorkoutsTotal> {
-    const workouts = await this.workoutsRepository.getWorkouts(
-      userId,
-      from,
-      to,
-      limit,
-      offset,
-    );
+    if (new Date(from) <= new Date(to)) {
+      throw new InternalServerErrorException()
+    }
+    const [workouts, count] = await Promise.all([
+      await this.workoutsRepository.getWorkouts(userId, from, to, limit, offset,),
+      await this.workoutsRepository.getTotalWorkouts(userId, from, to)
+    ])
+
     const workoutsTotol: WorkoutsTotal = {
       items: workouts.map((s) => ({
         id: s.id,
@@ -71,14 +73,14 @@ export class WorkoutsService {
         durationMinutes: s.durationMinutes!,
         exerciseCount: [...new Set(s.workoutSets.map((e) => e.exerciseId))]
           .length,
-        setCount: s.workoutSets.reduce((sum, item) => sum + item.setNo, 0),
+        setCount: s.workoutSets.length,
         totalVolume: s.workoutSets.reduce(
-          (sum, item) => sum + (item.weightKg.toNumber() + item.reps),
+          (sum, item) => sum + (item.weightKg.toNumber() * item.reps),
           0,
         ),
-        topExercise: this.topExercises(s),
+        topExercises: this.topExercises(s),
       })),
-      total: workouts.length,
+      total: count,
     };
 
     return workoutsTotol;
@@ -94,9 +96,9 @@ export class WorkoutsService {
 
   private topExercises(
     item: Pick<WorkoutWithSets, 'workoutSets'>,
-  ): TopExercise[] {
+  ): TopExercises[] {
     const sortedSets = [...item.workoutSets].sort(
-      (a, b) => a.exerciseOrder - b.exerciseOrder,
+      (a, b) => Number(a.weightKg) - Number(b.weightKg),
     );
     const seenIds = new Set<string>();
     return sortedSets
@@ -114,7 +116,7 @@ export class WorkoutsService {
           name: item.exercise.name,
           weightKg: item.weightKg.toNumber(),
           reps: item.reps,
-        } satisfies TopExercise;
+        } satisfies TopExercises;
       });
   }
 }

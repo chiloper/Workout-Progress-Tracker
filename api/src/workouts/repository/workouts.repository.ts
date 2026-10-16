@@ -5,7 +5,7 @@ import { workoutWithSets, WorkoutWithSets } from '../type/workouts.type';
 
 @Injectable()
 export class WorkoutsRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async checkExercise(userId: string, exerciseId: string[]): Promise<number> {
     return await this.prisma.exercise.count({
@@ -66,6 +66,22 @@ export class WorkoutsRepository {
     });
   }
 
+  async getTotalWorkouts(
+    userId: string,
+    from: string,
+    to: string,
+  ): Promise<number> {
+    return await this.prisma.workout.count({
+      where: {
+        userId,
+        performedAt: {
+          ...(from && { gte: new Date(`${from}T00:00:00+07:00`) }),
+          ...(to && { lte: new Date(`${to}T23:59:59+07:00`) }),
+        },
+      }
+    })
+  }
+
   async getWorkouts(
     userId: string,
     from: string,
@@ -76,21 +92,15 @@ export class WorkoutsRepository {
     return await this.prisma.workout.findMany({
       where: {
         userId,
-        createdAt: {
-          gte: new Date(`${from}T00:00:00.000Z`),
-          lte: new Date(`${to}T23:59:59.999Z`),
-        },
-        workoutSets: {
-          every: {
-            exercise: {
-              isArchived: false,
-            },
-          },
+        performedAt: {
+          ...(from && { gte: new Date(`${from}T00:00:00+07:00`) }),
+          ...(to && { lte: new Date(`${to}T23:59:59+07:00`) }),
         },
       },
       include: workoutWithSets,
       orderBy: {
-        performedAt: 'asc',
+        performedAt: "desc",
+        createdAt: "desc"
       },
       take: limit,
       skip: offset,

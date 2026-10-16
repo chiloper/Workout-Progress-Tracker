@@ -5,9 +5,11 @@ import {
   IsDateString,
   IsInt,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
+  Matches,
   Max,
   MaxLength,
   Min,
@@ -49,21 +51,25 @@ export class CreateWorkoutDto {
 }
 
 export class getWorkoutsQueryDto {
-  @IsString()
+  @IsOptional()
   @IsNotEmpty()
+  @Matches(/^\d{4}-\d{2}-\d{2}$/)
+  @IsDateString()
   from!: string;
 
-  @IsString()
+  @IsOptional()
   @IsNotEmpty()
   to!: string;
 
   @IsNotEmpty()
   @Type(() => Number)
-  @Min(20)
+  @IsInt({ message: 'limit should be a number' })
+  @Min(1)
   @Max(50)
   limit: number = 20;
 
   @IsNotEmpty()
+  @IsInt({ message: 'limit should be a number' })
   @Type(() => Number)
   @Min(0)
   offset: number = 0;
