@@ -17,7 +17,7 @@ import type { AuthenticatedUser } from '../auth/types/auth.types';
 
 @Controller()
 export class WorkoutsController {
-  constructor(private readonly workoutsService: WorkoutsService) { }
+  constructor(private readonly workoutsService: WorkoutsService) {}
 
   @Post('workouts')
   async createWorkouts(

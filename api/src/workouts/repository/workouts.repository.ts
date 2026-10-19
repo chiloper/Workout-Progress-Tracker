@@ -5,7 +5,7 @@ import { workoutWithSets, WorkoutWithSets } from '../type/workouts.type';
 
 @Injectable()
 export class WorkoutsRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async checkExercise(userId: string, exerciseId: string[]): Promise<number> {
     return await this.prisma.exercise.count({
@@ -78,8 +78,8 @@ export class WorkoutsRepository {
           ...(from && { gte: new Date(`${from}T00:00:00+07:00`) }),
           ...(to && { lte: new Date(`${to}T23:59:59+07:00`) }),
         },
-      }
-    })
+      },
+    });
   }
 
   async getWorkouts(
@@ -98,10 +98,12 @@ export class WorkoutsRepository {
         },
       },
       include: workoutWithSets,
-      orderBy: {
-        performedAt: "desc",
-        createdAt: "desc"
-      },
+      orderBy: [
+        {
+          performedAt: 'desc',
+          createdAt: 'desc',
+        },
+      ],
       take: limit,
       skip: offset,
     });

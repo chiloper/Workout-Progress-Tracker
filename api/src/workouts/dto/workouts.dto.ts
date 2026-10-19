@@ -5,7 +5,6 @@ import {
   IsDateString,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsPositive,
   IsString,
@@ -24,7 +23,7 @@ export class CreateWorkoutDto {
   @MaxLength(100, {
     message: 'Your message exceeds the maximum limit of 100 characters.',
   })
-  title!: string;
+  title!: string | null;
 
   @IsDateString()
   @IsOptional()
@@ -33,7 +32,7 @@ export class CreateWorkoutDto {
   @IsOptional()
   @IsInt()
   @IsPositive()
-  durationMinutes!: number;
+  durationMinutes!: number | null;
 
   @IsOptional()
   @IsString()
