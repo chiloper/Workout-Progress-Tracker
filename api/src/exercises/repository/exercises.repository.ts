@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Exercise } from '../../../generated/client';
+import { Exercise, Prisma } from '../../../generated/client';
 import { CreateExercisesDto, UpdateExercisesDto } from '../dto/exercises.dto';
 
 @Injectable()
 export class ExercisesRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async getExerises(
     userId: string,
@@ -57,5 +57,30 @@ export class ExercisesRepository {
       },
       data: data,
     });
+  }
+
+  async getExercisesWithSetById(
+    userId: string,
+    id: string,
+  ): Promise<Prisma.ExerciseGetPayload<{ include: { workoutSets: { include: { workout: true } } } }> | null> {
+    return this.prisma.exercise.findFirst({
+      where: {
+        userId,
+        id
+      },
+      include: {
+        workoutSets: {
+          orderBy: {
+            workout: {
+              performedAt: "desc"
+            }
+          },
+          include: {
+            workout: true,
+          },
+        },
+      },
+
+    })
   }
 }

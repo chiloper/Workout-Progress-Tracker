@@ -6,10 +6,11 @@ import {
 import { ExercisesRepository } from './repository/exercises.repository';
 import { Exercise, Prisma } from '../../generated/client';
 import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
+import { LastExercises } from './types/exercises.type';
 
 @Injectable()
 export class ExercisesService {
-  constructor(private readonly exercisesRepository: ExercisesRepository) {}
+  constructor(private readonly exercisesRepository: ExercisesRepository) { }
 
   async findExercises(
     userId: string,
@@ -55,6 +56,32 @@ export class ExercisesService {
         }
       }
       throw e;
+    }
+  }
+
+  async getLastExercisesById(userId: string, id: string): Promise<LastExercises> {
+    const exercises = await this.exercisesRepository.getExercisesWithSetById(userId, id)
+    if (!exercises) {
+      return {
+        exerciseId: id,
+        workoutId: undefined,
+        performedAt: undefined,
+        sets: []
+      }
+    }
+    const lastWorkoutSets = exercises?.workoutSets[0]
+
+    return {
+      exerciseId: exercises?.id,
+      workoutId: lastWorkoutSets?.workoutId,
+      performedAt: lastWorkoutSets?.workout.performedAt.toISOString(),
+      sets: exercises?.workoutSets
+        .filter((f) => f.workoutId === lastWorkoutSets?.workoutId)
+        .map((m) => ({
+          setNo: m.setNo,
+          weightKg: m.weightKg.toNumber(),
+          reps: m.reps
+        }))
     }
   }
 }
