@@ -98,12 +98,7 @@ export class WorkoutsRepository {
         },
       },
       include: workoutWithSets,
-      orderBy: [
-        {
-          performedAt: 'desc',
-          createdAt: 'desc',
-        },
-      ],
+      orderBy: [{ performedAt: 'desc' }, { createdAt: 'desc' }],
       take: limit,
       skip: offset,
     });

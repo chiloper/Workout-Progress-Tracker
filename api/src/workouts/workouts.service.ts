@@ -97,9 +97,12 @@ export class WorkoutsService {
     item: Pick<WorkoutWithSets, 'workoutSets'>,
   ): TopExercises[] {
     const sortedSets = [...item.workoutSets].sort(
-      (a, b) => Number(b.weightKg) - Number(a.weightKg),
+      (a, b) =>
+        a.exerciseOrder - b.exerciseOrder ||
+        Number(b.weightKg) - Number(a.weightKg),
     );
     const seenIds = new Set<string>();
+
     return sortedSets
       .filter((item) => {
         const isNotDuplicate = !seenIds.has(item.exerciseId);
