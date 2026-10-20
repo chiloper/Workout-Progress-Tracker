@@ -4,7 +4,6 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { configureApp } from '../src/app.setup';
-import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../src/prisma/prisma.service';
 import bcrypt from 'bcryptjs';
 
@@ -16,6 +15,22 @@ describe('AppController (e2e)', () => {
   let tokenA: string, tokenB: string;
   let exerciseId: string, workoutId: string;
   let prisma: PrismaService;
+
+  interface LoginBody {
+    accessToken: string;
+  }
+
+  async function login(
+    app: INestApplication<App>,
+    email: string,
+    password: string,
+  ) {
+    const res = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email, password })
+      .expect(200);
+    return (res.body as LoginBody).accessToken;
+  }
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -33,22 +48,16 @@ describe('AppController (e2e)', () => {
     await prisma.user.create({
       data: { email: `b-${stamp}@test.com`, passwordHash: hash },
     });
-    tokenA = (
-      await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: `a-${stamp}@test.com`, password: 'Passw0rd!' })
-    ).body.accessToken;
-    tokenB = (
-      await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({ email: `b-${stamp}@test.com`, password: 'Passw0rd!' })
-    ).body.accessToken;
+
+    tokenA = await login(app, `a-${stamp}@test.com`, 'Passw0rd!');
+    tokenB = await login(app, `b-${stamp}@test.com`, 'Passw0rd!');
+
     const ex = await request(app.getHttpServer())
       .post('/exercises')
       .auth(tokenA, { type: 'bearer' })
       .send({ name: exercisesName, muscleGroup: 'LEGS' })
       .expect(201);
-    exerciseId = ex.body.id;
+    exerciseId = (ex.body as { id: string }).id;
 
     const w = await request(app.getHttpServer())
       .post('/workouts')
@@ -59,7 +68,7 @@ describe('AppController (e2e)', () => {
         sets: [{ exerciseId, setNo: 1, weightKg: 60, reps: 10 }],
       })
       .expect(201);
-    workoutId = w.body.id;
+    workoutId = (w.body as { id: string }).id;
   });
 
   it('/health (GET)', () => {
@@ -95,7 +104,24 @@ describe('AppController (e2e)', () => {
       .expect(401)
       .expect((res) => {
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual('Unauthorized');
+        expect((res.body as { error: string }).error).toEqual('Unauthorized');
+      });
+    return req;
+  });
+
+  it('/login (POST) Unauthorized', () => {
+    const payload = {
+      name: exercisesName,
+      muscleGroup: 'LEGS',
+    };
+    const req = request(app.getHttpServer())
+      .post('/exercises')
+      .send(payload)
+      .auth('', { type: 'bearer' })
+      .expect(401)
+      .expect((res) => {
+        expect(res.body).toHaveProperty('error');
+        expect((res.body as { error: string }).error).toEqual(`Unauthorized`);
       });
     return req;
   });
@@ -112,7 +138,7 @@ describe('AppController (e2e)', () => {
       .expect(409)
       .expect((res) => {
         expect(res.body).toHaveProperty('error');
-        expect(res.body.error).toEqual(`Conflict`);
+        expect((res.body as { error: string }).error).toEqual(`Conflict`);
       });
     return req;
   });
@@ -140,7 +166,9 @@ describe('AppController (e2e)', () => {
     return req;
   });
 
-  it('/workouts (POST)  workouts valid 400', () => {
+  it('/workouts (POST)  workouts valid 400', async () => {
+    const beforeWorkoutCount = await prisma.workout.count();
+    const beforeSetsCount = await prisma.workoutSet.count();
     const payload = {
       title: 'Test Day', // ไม่บังคับ
       // "performedAt": "2026-10-09T10:30:00+07:00", // ISO 8601 ไม่ส่ง = เวลาปัจจุบัน
@@ -160,6 +188,10 @@ describe('AppController (e2e)', () => {
       .send(payload)
       .auth(tokenA, { type: 'bearer' })
       .expect(400);
+    const afterWorkoutCount = await prisma.workout.count();
+    const afterSetsCount = await prisma.workoutSet.count();
+    expect(beforeWorkoutCount).toEqual(afterWorkoutCount);
+    expect(beforeSetsCount).toEqual(afterSetsCount);
     return req;
   });
 
