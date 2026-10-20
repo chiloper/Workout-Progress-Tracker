@@ -63,16 +63,16 @@ export class ExercisesService {
     userId: string,
     id: string,
   ): Promise<LastExercises> {
+    const exercise = await this.exercisesRepository.getExeriseById(userId, id);
+
+    if (!exercise) throw new NotFoundException();
+
     const workouts = await this.exercisesRepository.getExercisesWithSetById(
       userId,
       id,
     );
-    if (!workouts) {
-      throw new NotFoundException();
-    }
 
-    const lastWorkoutSets = workouts?.workoutSets[0];
-    if (!lastWorkoutSets) {
+    if (!workouts) {
       return {
         exerciseId: id,
         workoutId: undefined,
@@ -80,7 +80,6 @@ export class ExercisesService {
         sets: [],
       };
     }
-    console.log(workouts);
 
     return {
       exerciseId: id,

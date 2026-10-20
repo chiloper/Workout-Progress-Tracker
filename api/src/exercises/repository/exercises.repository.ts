@@ -63,7 +63,7 @@ export class ExercisesRepository {
     userId: string,
     exerciseId: string,
   ): Promise<Prisma.WorkoutGetPayload<{
-    include: { workoutSets: { include: { exercise: true } } };
+    include: { workoutSets: true };
   }> | null> {
     return this.prisma.workout.findFirst({
       where: {
@@ -79,7 +79,6 @@ export class ExercisesRepository {
         workoutSets: {
           where: { exerciseId },
           orderBy: { setNo: 'asc' },
-          include: { exercise: true },
         },
       },
     });
