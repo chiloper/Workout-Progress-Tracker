@@ -5,12 +5,18 @@ import { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { configureApp } from '../src/app.setup';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../src/prisma/prisma.service';
+import bcrypt from 'bcryptjs';
 
 
 
 describe('AppController (e2e)', () => {
+  const stamp = Date.now();
+  const exercisesName = `Squat-${stamp}`
   let app: INestApplication<App>;
-  let validToken: string
+  let tokenA: string, tokenB: string;
+  let exerciseId: string, workoutId: string;
+  let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,11 +26,24 @@ describe('AppController (e2e)', () => {
     configureApp(app)
     await app.init();
 
-    const jwtService = moduleFixture.get<JwtService>(JwtService)
-    validToken = jwtService.sign(
-      { sub: '13e60d36-0b5f-4a23-b3b6-58d31806d260', username: 'admin' },
-      { expiresIn: '1m' }
-    )
+    prisma = app.get(PrismaService);
+    const hash = await bcrypt.hash('Passw0rd!', 10);
+    await prisma.user.create({ data: { email: `a-${stamp}@test.com`, passwordHash: hash } });
+    await prisma.user.create({ data: { email: `b-${stamp}@test.com`, passwordHash: hash } });
+    tokenA = (await request(app.getHttpServer()).post('/auth/login')
+      .send({ email: `a-${stamp}@test.com`, password: 'Passw0rd!' })).body.accessToken;
+    tokenB = (await request(app.getHttpServer()).post('/auth/login')
+      .send({ email: `b-${stamp}@test.com`, password: 'Passw0rd!' })).body.accessToken;
+    const ex = await request(app.getHttpServer()).post('/exercises')
+      .auth(tokenA, { type: 'bearer' })
+      .send({ name: exercisesName, muscleGroup: 'LEGS' }).expect(201);
+    exerciseId = ex.body.id;
+
+    const w = await request(app.getHttpServer()).post('/workouts')
+      .auth(tokenA, { type: 'bearer' })
+      .send({ title: 'T', sets: [{ exerciseId, setNo: 1, weightKg: 60, reps: 10 }] })
+      .expect(201);
+    workoutId = w.body.id;
   });
 
 
@@ -71,13 +90,13 @@ describe('AppController (e2e)', () => {
 
   it('/exercises (POST) Duplicate Name Exercises 409', () => {
     const payload = {
-      "name": "Squat",
+      "name": exercisesName,
       "muscleGroup": "LEGS"
     }
     const req = request(app.getHttpServer())
       .post('/exercises')
       .send(payload)
-      .auth(validToken, { type: "bearer" })
+      .auth(tokenA, { type: "bearer" })
       .expect(409)
       .expect((res) => {
         expect(res.body).toHaveProperty('error')
@@ -86,7 +105,7 @@ describe('AppController (e2e)', () => {
     return req
   });
 
-  it('/workouts (POST) Create workouts Success', () => {
+  it('/workouts (POST) Create workouts Success', async () => {
     const payload = {
       "title": "Test Day", // ไม่บังคับ
       // "performedAt": "2026-10-09T10:30:00+07:00", // ISO 8601 ไม่ส่ง = เวลาปัจจุบัน
@@ -94,23 +113,17 @@ describe('AppController (e2e)', () => {
       // "note": "", // ไม่บังคับ
       "sets": [
         {
-          "exerciseId": "05d6e23a-6b86-4144-8627-ba9e97abba39",
+          "exerciseId": exerciseId,
           "setNo": 1,
           "weightKg": 5.0,
           "reps": 14
         },
-        {
-          "exerciseId": "05d6e23a-6b86-4144-8627-ba9e97abba39",
-          "setNo": 2,
-          "weightKg": 5.0,
-          "reps": 14
-        }
       ]
     }
     const req = request(app.getHttpServer())
       .post('/workouts')
       .send(payload)
-      .auth(validToken, { type: "bearer" })
+      .auth(tokenA, { type: "bearer" })
       .expect(201)
     return req
   })
@@ -118,7 +131,7 @@ describe('AppController (e2e)', () => {
 
   it('/workouts (POST)  workouts valid 400', () => {
     const payload = {
-      "title": "Test Day 05d6e23a-6b86-4144-8627-ba9e97abba45 05d6e23a-6b86-4144-8627-ba9e97abba45", // ไม่บังคับ
+      "title": "Test Day", // ไม่บังคับ
       // "performedAt": "2026-10-09T10:30:00+07:00", // ISO 8601 ไม่ส่ง = เวลาปัจจุบัน
       // "durationMinutes": 1, // ไม่บังคับ
       // "note": "", // ไม่บังคับ
@@ -129,41 +142,40 @@ describe('AppController (e2e)', () => {
           "weightKg": 5.0,
           "reps": 14
         },
-        {
-          "exerciseId": "05d6e23a-6b86-4144-8627-ba9e97abba45",
-          "setNo": 2,
-          "weightKg": 5.0,
-          "reps": 14
-        }
+
       ]
     }
     const req = request(app.getHttpServer())
       .post('/workouts')
       .send(payload)
-      .auth(validToken, { type: "bearer" })
+      .auth(tokenA, { type: "bearer" })
       .expect(400)
     return req
   })
 
   it('/workouts/:id (GET) get workouts Success', () => {
     const req = request(app.getHttpServer())
-      .get('/workouts/72dd56ed-21b1-43c1-a094-8a139d164a1f')
-      .auth(validToken, { type: "bearer" })
+      .get(`/workouts/${workoutId}`)
+      .auth(tokenA, { type: "bearer" })
       .expect(200)
     return req
   })
 
   it('/workouts/:id (GET) get workouts failed 404', () => {
     const req = request(app.getHttpServer())
-      .get('/workouts/42dd56ed-21b1-43c1-a094-8a139d164a12')
-      .auth(validToken, { type: "bearer" })
+      .get(`/workouts/${workoutId}`)
+      .auth(tokenB, { type: "bearer" })
       .expect(404)
     return req
   })
 
 
+
   afterAll(async () => {
-    await app.close()
-  })
+    await prisma.workout.deleteMany({ where: { user: { email: { endsWith: `-${stamp}@test.com` } } } });
+    await prisma.exercise.deleteMany({ where: { user: { email: { endsWith: `-${stamp}@test.com` } } } });
+    await prisma.user.deleteMany({ where: { email: { endsWith: `-${stamp}@test.com` } } });
+    await app.close();
+  });
 
 })
