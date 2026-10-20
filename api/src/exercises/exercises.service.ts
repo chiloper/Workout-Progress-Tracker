@@ -10,7 +10,7 @@ import { LastExercises } from './types/exercises.type';
 
 @Injectable()
 export class ExercisesService {
-  constructor(private readonly exercisesRepository: ExercisesRepository) { }
+  constructor(private readonly exercisesRepository: ExercisesRepository) {}
 
   async findExercises(
     userId: string,
@@ -59,29 +59,38 @@ export class ExercisesService {
     }
   }
 
-  async getLastExercisesById(userId: string, id: string): Promise<LastExercises> {
-    const exercises = await this.exercisesRepository.getExercisesWithSetById(userId, id)
-    if (!exercises) {
+  async getLastExercisesById(
+    userId: string,
+    id: string,
+  ): Promise<LastExercises> {
+    const workouts = await this.exercisesRepository.getExercisesWithSetById(
+      userId,
+      id,
+    );
+    if (!workouts) {
+      throw new NotFoundException();
+    }
+
+    const lastWorkoutSets = workouts?.workoutSets[0];
+    if (!lastWorkoutSets) {
       return {
         exerciseId: id,
         workoutId: undefined,
         performedAt: undefined,
-        sets: []
-      }
+        sets: [],
+      };
     }
-    const lastWorkoutSets = exercises?.workoutSets[0]
+    console.log(workouts);
 
     return {
-      exerciseId: exercises?.id,
-      workoutId: lastWorkoutSets?.workoutId,
-      performedAt: lastWorkoutSets?.workout.performedAt.toISOString(),
-      sets: exercises?.workoutSets
-        .filter((f) => f.workoutId === lastWorkoutSets?.workoutId)
-        .map((m) => ({
-          setNo: m.setNo,
-          weightKg: m.weightKg.toNumber(),
-          reps: m.reps
-        }))
-    }
+      exerciseId: id,
+      workoutId: workouts.id,
+      performedAt: workouts.performedAt.toISOString(),
+      sets: workouts.workoutSets.map((m) => ({
+        setNo: m.setNo,
+        weightKg: m.weightKg.toNumber(),
+        reps: m.reps,
+      })),
+    };
   }
 }

@@ -7,16 +7,15 @@ export type Exercises = {
   createdAt: string;
 };
 
-
 export type LastExercises = {
-  exerciseId: string,
-  workoutId: string | undefined,
-  performedAt: string | undefined,
-  sets: sets[]
-}
+  exerciseId: string;
+  workoutId: string | undefined;
+  performedAt: string | undefined;
+  sets: LastSets[];
+};
 
-type sets = {
-  setNo: number,
-  weightKg: number,
-  reps: number
-}
+type LastSets = {
+  setNo: number;
+  weightKg: number;
+  reps: number;
+};

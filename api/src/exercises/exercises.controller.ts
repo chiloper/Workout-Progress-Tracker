@@ -16,7 +16,7 @@ import { CreateExercisesDto, UpdateExercisesDto } from './dto/exercises.dto';
 
 @Controller()
 export class ExercisesController {
-  constructor(private readonly exercisesService: ExercisesService) { }
+  constructor(private readonly exercisesService: ExercisesService) {}
 
   @Get('exercises')
   getExercises(
@@ -43,11 +43,11 @@ export class ExercisesController {
     return this.exercisesService.updateExercise(id, user.id, dto);
   }
 
-  @Get('erercises/:id/last')
+  @Get('exercises/:id/last')
   getLastExercisesById(
     @CurrentUser() User: AuthenticatedUser,
-    @Param('id', ParseUUIDPipe) id: string
+    @Param('id', ParseUUIDPipe) id: string,
   ) {
-    return this.exercisesService.getLastExercisesById(User.id, id)
+    return this.exercisesService.getLastExercisesById(User.id, id);
   }
 }

@@ -5,7 +5,7 @@ import { CreateExercisesDto, UpdateExercisesDto } from '../dto/exercises.dto';
 
 @Injectable()
 export class ExercisesRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
   async getExerises(
     userId: string,
@@ -61,26 +61,27 @@ export class ExercisesRepository {
 
   async getExercisesWithSetById(
     userId: string,
-    id: string,
-  ): Promise<Prisma.ExerciseGetPayload<{ include: { workoutSets: { include: { workout: true } } } }> | null> {
-    return this.prisma.exercise.findFirst({
+    exerciseId: string,
+  ): Promise<Prisma.WorkoutGetPayload<{
+    include: { workoutSets: { include: { exercise: true } } };
+  }> | null> {
+    return this.prisma.workout.findFirst({
       where: {
         userId,
-        id
-      },
-      include: {
         workoutSets: {
-          orderBy: {
-            workout: {
-              performedAt: "desc"
-            }
-          },
-          include: {
-            workout: true,
+          some: {
+            exerciseId,
           },
         },
       },
-
-    })
+      orderBy: [{ performedAt: 'desc' }, { createdAt: 'desc' }],
+      include: {
+        workoutSets: {
+          where: { exerciseId },
+          orderBy: { setNo: 'asc' },
+          include: { exercise: true },
+        },
+      },
+    });
   }
 }
