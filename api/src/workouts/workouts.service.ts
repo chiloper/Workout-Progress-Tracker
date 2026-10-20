@@ -43,8 +43,8 @@ export class WorkoutsService {
 
   async getWorkoutsById(userId: string, id: string): Promise<Workout> {
     const workout = await this.workoutsRepository.getWorkoutsById(userId, id);
-    console.log("workout",workout);
-    
+    console.log('workout', workout);
+
     if (!workout) {
       throw new NotFoundException('Workout Not Found');
     }
