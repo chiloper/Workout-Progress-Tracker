@@ -1,5 +1,4 @@
 import { NavLink, Outlet } from "react-router-dom";
-
 export default function RootLayout() {
   return (
     <>
@@ -11,7 +10,9 @@ export default function RootLayout() {
         <NavLink to={'/progress'}>progress</NavLink>
         <NavLink to={'/login'}>login</NavLink>
       </nav>
-      <main><Outlet /></main>
+      <main>
+        <Outlet />
+      </main>
     </>
   )
 }

@@ -7,23 +7,30 @@ import Progress from './pages/progress/progress';
 import Home from './pages/home/home';
 import NotFound from './NotFound';
 import RootLayout from './RootLayout';
-import { ErrorPage } from './Errorpage';
+import { ErrorPage } from './ErrorPage';
+import AuthLayout from './AuthLayout';
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <RootLayout />,
-    ErrorBoundary: ErrorPage,
+    element: <AuthLayout />,
     errorElement: <NotFound />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "history", element: <History /> },
-      { path: "log", element: <Log /> },
-      { path: "progress", element: <Progress /> },
-      { path: "*", element: <NotFound /> }
-    ],
-  },
-  { path: "/login", element: <Login /> },
+      {
+        path: "/",
+        element: <RootLayout />,
+        ErrorBoundary: ErrorPage,
+        errorElement: <NotFound />,
+        children: [
+          { index: true, element: <Home /> },
+          { path: "history", element: <History /> },
+          { path: "log", element: <Log /> },
+          { path: "progress", element: <Progress /> },
+          { path: "*", element: <NotFound /> }
+        ],
+      },
+      { path: "/login", element: <Login /> },
+    ]
+  }
 ],
   { basename: import.meta.env.BASE_URL }
 );
@@ -31,9 +38,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <div className={"max-w-120 h-full flex "}>
       <RouterProvider router={router} />
-    </>
+    </div>
   )
 }
 

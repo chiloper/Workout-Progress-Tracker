@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -10,7 +12,6 @@
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -30,19 +31,29 @@
   }
 }
 
+@theme{
+  --color-canvas: #121316; /* พื้นหลังแอป → bg-canvas */
+  --color-card: #1C1E22; /* การ์ด → bg-card */
+  --color-line: #2C2F35; /* เส้น/ขอบ → border-line */
+  --color-ink: #F2F0EB; /* ตัวอักษรหลัก → text-ink */
+  --color-muted: #A3A7AE; /* ตัวอักษรจาง → text-muted */
+  --color-accent: #FF8A3D; /* สีเน้น → bg-accent / text-accent */
+  --font-num: "Barlow Condensed", sans-serif; /* ตัวเลข → font-num */
+  --font-thai: "IBM Plex Sans Thai", sans-serif; /* ไทย → font-thai */
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #9ca3af;
     --text-h: #f3f4f6;
-    --bg: #16171d;
+    --bg: #121316;
     --border: #2e303a;
     --code-bg: #1f2028;
     --accent: #c084fc;
     --accent-bg: rgba(192, 132, 252, 0.15);
     --accent-border: rgba(192, 132, 252, 0.5);
     --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+    --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
   }
 
   #social .button-icon {
@@ -63,6 +74,7 @@
 }
 
 body {
+  font-family: var(--font-num), var(--font-thai), sans-serif;
   margin: 0;
 }
 
