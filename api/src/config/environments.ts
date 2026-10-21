@@ -11,6 +11,10 @@ export class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  DATABASE_SCHEMA!: string;
+
+  @IsString()
+  @IsNotEmpty()
   JWT_SECRET!: string;
 
   @IsString()

@@ -24,7 +24,10 @@ const EXERCISES: Array<[string, Group]> = [
 ];
 
 const prisma = new PrismaClient({
-  adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL! }, { schema: 'workout-tracker-api' }),
+  adapter: new PrismaPg(
+    { connectionString: process.env.DATABASE_URL! },
+    { schema: process.env.DATABASE_SCHEMA! }
+  ),
 });
 
 async function main() {
