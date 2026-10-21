@@ -21,7 +21,7 @@ export class AuthService {
     private readonly authRepository: AuthRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   async register(dto: RegisterDto): Promise<AuthTokens> {
     const exsting = await this.authRepository.findByEmail(dto.email);
@@ -55,7 +55,7 @@ export class AuthService {
       email: user.email,
     };
 
-    const accessToken = await this.jwtService.signAsync(payload);
+    const accessToken = await this.jwtService.signAsync(payload, { expiresIn: this.accessTokenTtlSeconds() });
 
     return {
       accessToken,
