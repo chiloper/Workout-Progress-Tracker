@@ -6,6 +6,11 @@ export type CreateWorkoutWithSets = {
   sets: Set[];
 }
 
+export type User = {
+  id: string
+  email: string
+}
+
 type Set = {
   exerciseId: string;
   setNo: number;

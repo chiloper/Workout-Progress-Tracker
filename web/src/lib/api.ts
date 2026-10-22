@@ -1,6 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import type { MuscleGroup } from "./types/enum";
-import type { CreateWorkoutWithSets } from "./types/type";
+import type { CreateWorkoutWithSets, User } from "./types/type";
 
 export function apiBaseUrl() {
   const url = import.meta.env.VITE_API_URL
@@ -27,7 +27,7 @@ export const TokenStorage = {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null
   },
-  setSession: (accessToken: string, user?: any) => {
+  setSession: (accessToken: string, user?: User) => {
     if (typeof window === "undefined") return;
     localStorage.setItem('access_token', accessToken)
     if (user) {
@@ -53,15 +53,15 @@ apiClient.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 })
 
 // response interceptor: token expire
-apiClient.interceptors.response.use((response) => response, async (error: AxiosError<any>) => {
+apiClient.interceptors.response.use((response) => response, async (error: AxiosError<Response & { message: string }>) => {
   if (
-    error.response?.status === 401 && 
+    error.response?.status === 401 &&
     error.response.data.message !== 'Invalid email or password.'
   ) {
     TokenStorage.clear()
     if (typeof window !== 'undefined') {
       const baseURL = import.meta.env.BASE_URL || ''
-      window.location.href = `${baseURL}/login`
+      window.location.href = `${baseURL}login`
     }
   }
   return Promise.reject(error)

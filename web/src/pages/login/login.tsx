@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useAuth } from "../../context/authContext";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { AxiosError } from "axios";
+import { useAuth } from "../../context/auth";
 
 export default function Login() {
   const { login } = useAuth();
@@ -16,10 +17,10 @@ export default function Login() {
 
     try {
       await login(email, password)
-    } catch (err: any) {
-      const message =
-        err.response?.data?.message ||
-        err.message || 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+    } catch (err: unknown) {
+      let message = 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
+      if (err instanceof AxiosError) { message = err.response?.data?.message }
+      else if (err instanceof Error) { message = err.message }
       setError(typeof message === 'string' ? message : JSON.stringify(message))
     } finally {
       setLoading(false)

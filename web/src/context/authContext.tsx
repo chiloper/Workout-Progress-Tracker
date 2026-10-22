@@ -1,26 +1,23 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { authApi, TokenStorage } from "../lib/api";
+import { AuthContext } from "./auth";
 
 interface User {
   id: string;
   email: string
 }
 
-interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  refreshUser: () => Promise<void>
+
+const readStoredUser = (): User | null => {
+  if (!TokenStorage.getAccessToken()) return null
+  const me = TokenStorage.getUser()
+  if (!me) TokenStorage.clear()
+  return me
 }
 
-const AuthContext = createContext<AuthContextType>({} as AuthContextType)
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [user, setUser] = useState<User | null>(readStoredUser)
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
@@ -30,47 +27,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     pathname === '/register' ||
     pathname === '/register/';
 
-  const checkAuth = async () => {
-
-    if (typeof window !== 'undefined') {
-      const hash = window.location.hash || '';
-      // Automatically store token on email confirmation signup callback
-      if (hash.includes('type=signup') || hash.includes('type=email_change')) {
-        const hashParams = new URLSearchParams(hash.substring(1));
-        const token = hashParams.get('access_token');
-        if (token) {
-          TokenStorage.setSession(token);
-        }
-      }
-    }
-
-
-
-    const token = TokenStorage.getAccessToken()
-    if (!token) {
-      setUser(null);
-      setLoading(false);
-      if (!isPublicPage) {
-        navigate('/login')
-      }
-      return;
-    }
-
-    const me = TokenStorage.getUser()
-    if (me) {
-      setUser(me)
-    } else {
-      TokenStorage.clear()
-      setUser(null)
-      if (!isPublicPage) {
-        navigate('/login')
-      }
-    }
+  const refreshUser = async () => {
+    setUser(readStoredUser())
   }
 
   useEffect(() => {
-    checkAuth()
-  }, [pathname])
+    if (!user && !isPublicPage) {
+      navigate('/login')
+    }
+  }, [user, isPublicPage, navigate])
 
   const login = async (email: string, pass: string) => {
     const data = await authApi.login(email, pass);
@@ -97,11 +62,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     <AuthContext.Provider
       value={{
         user,
-        loading,
         login,
         register,
         logout,
-        refreshUser: checkAuth
+        refreshUser
       }}
     >
       {children}
@@ -109,4 +73,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   )
 }
 
-export const useAuth = () => useContext(AuthContext)
