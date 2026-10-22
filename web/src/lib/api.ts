@@ -20,18 +20,30 @@ export const apiClient = axios.create({
 export const TokenStorage = {
   getAccessToken: (): string | null => {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem('access_token')
+    try {
+      return localStorage.getItem('access_token')
+    } catch {
+      return null
+    }
   },
   getUser: () => {
     if (typeof window === "undefined") return null;
-    const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null
+    try {
+      const userStr = localStorage.getItem('user');
+      return userStr ? JSON.parse(userStr) : null
+    } catch {
+      return null
+    }
   },
   setSession: (accessToken: string, user?: User) => {
     if (typeof window === "undefined") return;
-    localStorage.setItem('access_token', accessToken)
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user))
+    try {
+      localStorage.setItem('access_token', accessToken)
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user))
+      }
+    } catch {
+      return null
     }
   },
   clear: () => {

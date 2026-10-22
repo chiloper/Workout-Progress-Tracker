@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { authApi, TokenStorage } from "../lib/api";
 import { AuthContext } from "./auth";
 
@@ -11,31 +11,22 @@ interface User {
 
 const readStoredUser = (): User | null => {
   if (!TokenStorage.getAccessToken()) return null
-  const me = TokenStorage.getUser()
-  if (!me) TokenStorage.clear()
-  return me
+  try {
+    const me = TokenStorage.getUser()
+    if (!me) TokenStorage.clear()
+    return me
+  } catch {
+    return null
+  }
 }
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(readStoredUser)
   const navigate = useNavigate()
-  const { pathname } = useLocation()
-
-  const isPublicPage =
-    pathname === '/login' ||
-    pathname === '/login/' ||
-    pathname === '/register' ||
-    pathname === '/register/';
 
   const refreshUser = async () => {
     setUser(readStoredUser())
   }
-
-  useEffect(() => {
-    if (!user && !isPublicPage) {
-      navigate('/login')
-    }
-  }, [user, isPublicPage, navigate])
 
   const login = async (email: string, pass: string) => {
     const data = await authApi.login(email, pass);

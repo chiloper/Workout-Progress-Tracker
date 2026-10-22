@@ -9,26 +9,32 @@ import NotFound from './NotFound';
 import RootLayout from './RootLayout';
 import { ErrorPage } from './ErrorPage';
 import AuthLayout from './AuthLayout';
+import ProtectedRoute from './ProtectedRoute';
 
 const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     errorElement: <NotFound />,
     children: [
-      {
-        path: "/",
-        element: <RootLayout />,
-        ErrorBoundary: ErrorPage,
-        errorElement: <NotFound />,
-        children: [
-          { index: true, element: <Home /> },
-          { path: "history", element: <History /> },
-          { path: "log", element: <Log /> },
-          { path: "progress", element: <Progress /> },
-          { path: "*", element: <NotFound /> }
-        ],
-      },
       { path: "/login", element: <Login /> },
+      {
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "/",
+            element: <RootLayout />,
+            ErrorBoundary: ErrorPage,
+            errorElement: <NotFound />,
+            children: [
+              { index: true, element: <Home /> },
+              { path: "history", element: <History /> },
+              { path: "log", element: <Log /> },
+              { path: "progress", element: <Progress /> },
+              { path: "*", element: <NotFound /> }
+            ],
+          },
+        ]
+      }
     ]
   }
 ],
