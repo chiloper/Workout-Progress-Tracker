@@ -10,6 +10,7 @@ import RootLayout from './RootLayout';
 import { ErrorPage } from './ErrorPage';
 import AuthLayout from './AuthLayout';
 import ProtectedRoute from './ProtectedRoute';
+import { Exercises } from './pages/exercises/exercises';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
             children: [
               { index: true, element: <Home /> },
               { path: "history", element: <History /> },
+              { path: "exercises", element: <Exercises /> },
               { path: "log", element: <Log /> },
               { path: "progress", element: <Progress /> },
               { path: "*", element: <NotFound /> }
@@ -44,7 +46,7 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <div className={"max-w-120 h-full flex "}>
+    <div className={"w-full min-h-dvh flex"}>
       <RouterProvider router={router} />
     </div>
   )

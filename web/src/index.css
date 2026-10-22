@@ -62,7 +62,7 @@
 }
 
 #root {
-  width: 1126px;
+  width: 480px;
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
@@ -74,7 +74,7 @@
 }
 
 body {
-  font-family: var(--font-num), var(--font-thai), sans-serif;
+  font-family:  var(--font-thai), var(--font-num);
   margin: 0;
 }
 

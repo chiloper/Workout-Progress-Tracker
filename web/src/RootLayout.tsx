@@ -1,17 +1,13 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { Nav } from "./componentes/nav";
 export default function RootLayout() {
   return (
     <>
-      <nav>
-        this is home
-        <NavLink to={'/'} >home</NavLink>
-        <NavLink to={'/history'} >history</NavLink>
-        <NavLink to={'/log'}>log</NavLink>
-        <NavLink to={'/progress'}>progress</NavLink>
-        <NavLink to={'/login'}>login</NavLink>
-      </nav>
-      <main>
-        <Outlet />
+      <main className="flex flex-col w-full relative ">
+        <div className=" flex-1">
+          <Outlet />
+        </div>
+        <Nav />
       </main>
     </>
   )
